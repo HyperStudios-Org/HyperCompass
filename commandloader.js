@@ -38,4 +38,4 @@ for (const folder of commandFolders) {
 		 } catch (error) {
 				 console.error(error);
 		 }
- })();
+ })(); 
