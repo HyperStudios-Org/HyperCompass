@@ -12,6 +12,7 @@
   "dependencies": {
     "canvas": "^2.11.2",
     "chalk": "^4.1.2",
-    "discord.js": "^14.15.3"
+    "discord.js": "^14.15.3",
+    "moment": "^2.30.1"
   }
 }
