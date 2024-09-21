@@ -19,6 +19,10 @@ let userSchema = new Schema({
     Type: Array,
     Default: []
   },
+  Box: {
+    Type: Array,
+    Default: []
+  },
   Creazione: Date,
   Sospeso: Boolean
 })

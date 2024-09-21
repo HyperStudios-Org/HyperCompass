@@ -107,6 +107,7 @@ module.exports = {
                             HyperCoins: 300,
                             Quest: [],
                             Item: [],
+                            Box: [],
                             Creazione: new Date(),
                             Sospeso: false
                         });
