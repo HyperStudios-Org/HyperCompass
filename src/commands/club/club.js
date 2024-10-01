@@ -105,8 +105,8 @@ module.exports = {
                         { name: '**<:HY_home:1280658819164410030> Nome Club**', value: `${newClub.ClubName}`, inline: true },
                         { name: '**<:HY_link:1280661051683373076> Club ID**', value: `${newClub.ClubID}`, inline: true },
                         { name: ' ', value: ` `, inline: false},
-                        { name: '**<:HY_grafico:1280661171464175680> Punti Club**', value: `${newClub.Points}`, inline: true },
-                        { name: '**<:HY_particles:1280659121879912531> Rank Club**', value: `${newClub.Rank}`, inline: true },
+                        { name: '**<:coins:1290762555312181331> Punti Club**', value: `${newClub.Points}`, inline: true },
+                        { name: '**<:flame:1290761217505362061> Rank Club**', value: `${newClub.Rank}`, inline: true },
                         { name: '**<:HY_copied:1280660302664568865> Descrizione Club**', value: `${newClub.ClubDescription}` },
                     )
                     .setThumbnail(interaction.guild.iconURL({ dynamic: true, size: 1024 })) 
@@ -120,6 +120,36 @@ module.exports = {
             }
         }
         
-        
+        if (subcommand === 'edit') {
+            const clubID = interaction.options.getString('club'); 
+            const userId = interaction.user.id; 
+
+
+            const club = await clubSchema.findOne({ ClubID: clubID });
+
+         
+            if (!club) {
+                return interaction.reply('Club non trovato. Assicurati di inserire il nome o l\'ID corretto.');
+            }
+
+       
+            const userRole = club.Ruoli.find(role => role.UserID === userId);
+
+            if (userRole && (userRole.Role === 'Ownership' || userRole.Role === 'Admin')) {
+                
+              try {
+
+                const Embed = new EmbedBuilder()
+                .setTitle("Impostazioni Club")
+                .setDescription(`Qua sotto sono riportate le impostazioni del club\n\n`)
+
+              } catch (error) {
+                    console.error(error);
+                    await modalInteraction.reply('Si è verificato un errore durante la modifica del club.');
+              }
+            } else {
+               console.log('funziona kapo')
+            }
+        }
     }
 };
