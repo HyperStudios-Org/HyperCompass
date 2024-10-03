@@ -107,7 +107,7 @@ module.exports = {
                         { name: ' ', value: ` `, inline: false},
                         { name: '**<:coins:1290762555312181331> Punti Club**', value: `${newClub.Points}`, inline: true },
                         { name: '**<:flame:1290761217505362061> Rank Club**', value: `${newClub.Rank}`, inline: true },
-                        { name: '**<:HY_copied:1280660302664568865> Descrizione Club**', value: `${newClub.ClubDescription}` },
+                        { name: '**<:HY_File:1291057521359982643> Descrizione Club**', value: `${newClub.ClubDescription}` },
                     )
                     .setThumbnail(interaction.guild.iconURL({ dynamic: true, size: 1024 })) 
                     .setImage("https://media.discordapp.net/attachments/1279883921810522202/1290695776070008912/Green_Action_Completed.png?ex=66fd659c&is=66fc141c&hm=bc15919905efeb4609ce7bcfea3c6ac303fc549105ad3fd5f4a3bc25c058ffcb&=&format=webp&quality=lossless")
@@ -141,7 +141,9 @@ module.exports = {
 
                 const Embed = new EmbedBuilder()
                 .setTitle("Impostazioni Club")
-                .setDescription(`Qua sotto sono riportate le impostazioni del club\n\n`)
+                .setDescription(`Qua sotto sono riportate le impostazioni del club\n\n<:HY_File:1291057521359982643> **Nome Club** \`${club.ClubName}\`\n`)
+
+                await interaction.reply({ embeds: [Embed]})
 
               } catch (error) {
                     console.error(error);
