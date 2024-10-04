@@ -4,7 +4,9 @@ const {
     TextInputBuilder, 
     TextInputStyle, 
     EmbedBuilder,
-    ActionRowBuilder 
+    ActionRowBuilder ,
+    ButtonBuilder,
+    ButtonStyle
 } = require('discord.js');
 const clubSchema = require('../../schemas/clubSchema'); 
 
@@ -122,36 +124,66 @@ module.exports = {
         
         if (subcommand === 'edit') {
             const clubID = interaction.options.getString('club'); 
-            const userId = interaction.user.id; 
-
+            const userId = interaction.user.id;
+        
 
             const club = await clubSchema.findOne({ ClubID: clubID });
-
-         
+        
             if (!club) {
                 return interaction.reply('Club non trovato. Assicurati di inserire il nome o l\'ID corretto.');
             }
+        
+  
+            const ownershipRole = club.Ruoli.find(role => role.Role === 'Ownership');
+        
+            if (!ownershipRole) {
+                return interaction.reply('Non è stato trovato nessun utente con il ruolo Ownership in questo club.');
+            }
+        
 
-       
+            const ownerUser = await interaction.client.users.fetch(ownershipRole.UserID);
+        
+
             const userRole = club.Ruoli.find(role => role.UserID === userId);
-
+        
             if (userRole && (userRole.Role === 'Ownership' || userRole.Role === 'Admin')) {
-                
-              try {
+                try {
+                    const embed = new EmbedBuilder()
+                        .setTitle("Impostazioni Club")
+                        .setDescription(
+                            `Qua sotto sono riportate le impostazioni del club\n\n` +
+                            `<:HY_Ping:1291053678244921495> **Nome Club:** \`${club.ClubName}\`\n` +
+                            `<:HY_File:1291057521359982643> **Descrizione Club:** \`${club.ClubDescription}\`\n` +
+                            `<:HY_Yellow_Key:1291485943663956020> **Ownership:** <@${ownerUser.id}> / \`${ownerUser.tag}\``
+                        )
+                        
+                        .setColor('#2b2d31');
 
-                const Embed = new EmbedBuilder()
-                .setTitle("Impostazioni Club")
-                .setDescription(`Qua sotto sono riportate le impostazioni del club\n\n<:HY_File:1291057521359982643> **Nome Club** \`${club.ClubName}\`\n`)
+                       const buttons = new ActionRowBuilder()
+                       .addComponents(
+                        button = new ButtonBuilder()
+                        .setCustomId(`description_${club.ClubID}`)
+                        .setLabel('Modifica Descrizione Club')
+                        .setStyle(ButtonStyle.Secondary),
 
-                await interaction.reply({ embeds: [Embed]})
+                        button2 = new ButtonBuilder()
+                        .setCustomId(`ownership_${club.ClubID}`)
+                        .setLabel('Trasferisci Ownership')
+                        .setStyle(ButtonStyle.Secondary),
 
-              } catch (error) {
+                        button3 = new ButtonBuilder()
+                        .setCustomId(`delete_${club.ClubID}`)
+                        .setLabel('<:red_trash_HY:1291051041944502367> Elimina Club')
+                        .setStyle(ButtonStyle.Danger)
+                       )
+        
+                    await interaction.reply({ embeds: [embed], components: [buttons] });
+                } catch (error) {
                     console.error(error);
-                    await modalInteraction.reply('Si è verificato un errore durante la modifica del club.');
-              }
+                    await interaction.reply('Si è verificato un errore durante la modifica del club.');
+                }
             } else {
-               console.log('funziona kapo')
+                return interaction.reply('Non hai i permessi per modificare questo club.');
             }
         }
-    }
-};
+    }}        
