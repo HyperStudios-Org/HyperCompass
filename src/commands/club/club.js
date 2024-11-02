@@ -126,24 +126,20 @@ module.exports = {
             const clubID = interaction.options.getString('club'); 
             const userId = interaction.user.id;
         
-
             const club = await clubSchema.findOne({ ClubID: clubID });
         
             if (!club) {
                 return interaction.reply('Club non trovato. Assicurati di inserire il nome o l\'ID corretto.');
             }
         
-  
             const ownershipRole = club.Ruoli.find(role => role.Role === 'Ownership');
         
             if (!ownershipRole) {
                 return interaction.reply('Non è stato trovato nessun utente con il ruolo Ownership in questo club.');
             }
         
-
             const ownerUser = await interaction.client.users.fetch(ownershipRole.UserID);
         
-
             const userRole = club.Ruoli.find(role => role.UserID === userId);
         
             if (userRole && (userRole.Role === 'Ownership' || userRole.Role === 'Admin')) {
@@ -151,31 +147,34 @@ module.exports = {
                     const embed = new EmbedBuilder()
                         .setTitle("Impostazioni Club")
                         .setDescription(
-                            `Qua sotto sono riportate le impostazioni del club\n\n` +
-                            `<:HY_Ping:1291053678244921495> **Nome Club:** \`${club.ClubName}\`\n` +
-                            `<:HY_File:1291057521359982643> **Descrizione Club:** \`${club.ClubDescription}\`\n` +
-                            `<:HY_Yellow_Key:1291485943663956020> **Ownership:** <@${ownerUser.id}> / \`${ownerUser.tag}\``
+                           "Benvenuto nelle impostazioni del tuo club! Questa è la pagina introduttiva.\nUsa i pulsanti qui sotto per navigare tra le varie sezioni."
                         )
-                        
                         .setColor('#2b2d31');
 
-                       const buttons = new ActionRowBuilder()
-                       .addComponents(
-                        button = new ButtonBuilder()
-                        .setCustomId(`description_${club.ClubID}`)
-                        .setLabel('Modifica Descrizione Club')
-                        .setStyle(ButtonStyle.Secondary),
-
-                        button2 = new ButtonBuilder()
-                        .setCustomId(`ownership_${club.ClubID}`)
-                        .setLabel('Trasferisci Ownership')
-                        .setStyle(ButtonStyle.Secondary),
-
-                        button3 = new ButtonBuilder()
-                        .setCustomId(`delete_${club.ClubID}`)
-                        .setLabel('<:red_trash_HY:1291051041944502367> Elimina Club')
-                        .setStyle(ButtonStyle.Danger)
-                       )
+                        const clubID = club.ClubID
+        
+                    const buttons = new ActionRowBuilder()
+                    .addComponents(
+              
+                        new ButtonBuilder()
+                            .setCustomId('indietro')
+                            .setEmoji('<:HY_Left:1291666625958776883>')
+                            .setStyle(ButtonStyle.Secondary)
+                            .setDisabled(true),
+        
+                        
+                        new ButtonBuilder()
+                            .setCustomId('pagina_corrente')
+                            .setLabel('Pagina 0/1')
+                            .setStyle(ButtonStyle.Secondary)
+                            .setDisabled(true),
+        
+                       
+                        new ButtonBuilder()
+                            .setCustomId(`avanti_${clubID}`)
+                            .setEmoji('<:HY_Right:1291053827801481379>')
+                            .setStyle(ButtonStyle.Secondary)
+                    );
         
                     await interaction.reply({ embeds: [embed], components: [buttons] });
                 } catch (error) {
@@ -186,4 +185,4 @@ module.exports = {
                 return interaction.reply('Non hai i permessi per modificare questo club.');
             }
         }
-    }}        
+    } }   
