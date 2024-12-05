@@ -4,7 +4,7 @@ let serverSchema = new Schema({
   GuildID: String,
   Description: String,
   Rank: String,
-  Points: String,
+  Points: Number,
   Decoration: {
     Type: Array,
     Default: []
