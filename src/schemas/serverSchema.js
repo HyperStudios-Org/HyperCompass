@@ -3,11 +3,12 @@ const { model, Schema } = require('mongoose');
 let serverSchema = new Schema({
   GuildID: String,
   Description: String,
-  Tag: {
+  Rank: String,
+  Points: String,
+  Decoration: {
     Type: Array,
     Default: []
   },
-  Invite: String,
 })
 
 module.exports = model('serverSchema', serverSchema);
