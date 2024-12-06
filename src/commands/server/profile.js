@@ -1,88 +1,95 @@
-const { SlashCommandBuilder, AttachmentBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, AttachmentBuilder } = require('discord.js');
 const Canvas = require('canvas');
 const serverSchema = require('../../schemas/serverSchema');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('profile')
-        .setDescription('Gestisci il profilo del server')
+        .setDescription('Visualizza o modifica il profilo del server')
         .addSubcommand(command =>
             command
                 .setName('settings')
                 .setDescription('Modifica il profilo del server')
-        )
-        .addSubcommand(command =>
-            command
-                .setName('info')
-                .setDescription('Visualizza le informazioni del server')
         ),
 
     async execute(interaction) {
-        const subcommand = interaction.options.getSubcommand();
+        const serverSchemaData = await serverSchema.findOne({ GuildID: interaction.guild.id }) || {
+            GuildID: interaction.guild.id,
+            Description: "Non impostata",
+            Rank: "Default",
+            Points: 0,
+            Coins: 0,
+            Decoration: [],
+        };
 
-        if (subcommand === 'settings') {
-            let serverSchemaData = await serverSchema.findOne({ GuildID: interaction.guild.id });
+        const { Description, Rank, Points, Coins } = serverSchemaData;
 
-            if (!serverSchemaData) {
-                serverSchemaData = await serverSchema.create({
-                    GuildID: interaction.guild.id,
-                    Description: "",
-                    Rank: "Default",
-                    Points: 0,
-                    Decoration: []
-                });
-            }
+        const canvas = Canvas.createCanvas(900, 500); 
+        const ctx = canvas.getContext('2d');
 
-            const description = serverSchemaData.Description || 'Non impostata';
-            const rank = serverSchemaData.Rank || 'Default';
-            const points = serverSchemaData.Points || 0;
-            const decorationCount = serverSchemaData.Decoration ? serverSchemaData.Decoration.length : 0;
+        // Background
+        ctx.fillStyle = '#2f3136'; 
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
 
-            // Crea la canvas
-            const canvas = Canvas.createCanvas(800, 400);
-            const context = canvas.getContext('2d');
+        // Header
+        ctx.fillStyle = '#4c4cff';
 
-            // Imposta uno sfondo per l'immagine
-            context.fillStyle = '#2c2f33';
-            context.fillRect(0, 0, canvas.width, canvas.height);
+        const x = 50;   
+        const y = 50;    
+        const width = 800;  
+        const height = 300; 
+        const radius = 50;  
+        
+ 
+        ctx.beginPath();
+        ctx.moveTo(x + radius, y);
+        ctx.arcTo(x + width, y, x + width, y + height, radius);
+        ctx.arcTo(x + width, y + height, x, y + height, radius);
+        ctx.arcTo(x, y + height, x, y, radius);
+        ctx.arcTo(x, y, x + width, y, radius);
+        ctx.closePath();
+        ctx.fill();
 
-            // Imposta la font per il testo
-            context.font = '30px Arial';
-            context.fillStyle = '#FFFFFF';
-            context.textAlign = 'center';
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '30px sans-serif';
+        ctx.fillText('PROFILO', 100, 100);
+        ctx.fillText(interaction.guild.name, 100, 140);
+        ctx.fillText(`ID: ${interaction.guild.id}`, 600, 100);
+        ctx.fillText(`Creato il: ${interaction.guild.createdAt.toDateString()}`, 600, 140);
 
-            // Aggiungi le informazioni del server
-            context.fillText(`Nome del Server: ${interaction.guild.name}`, canvas.width / 2, 50);
-            context.fillText(`Descrizione: ${description}`, canvas.width / 2, 100);
-            context.fillText(`Rank: ${rank}`, canvas.width / 2, 150);
-            context.fillText(`Punti: ${points}`, canvas.width / 2, 200);
-            context.fillText(`Decorazioni: ${decorationCount}`, canvas.width / 2, 250);
+        // Statistiche
+        ctx.fillStyle = '#2f3136';
+        ctx.fillRect(50, 200, 800, 250); 
 
-            // Aggiungi l'avatar del server
-            const avatar = await Canvas.loadImage(interaction.guild.iconURL({ format: 'png', size: 512 }));
-            context.drawImage(avatar, canvas.width / 2 - 64, 300, 128, 128);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '20px sans-serif';
+        ctx.fillText('Descrizione:', 100, 250);
+        ctx.fillText(Description, 300, 250);
 
-            // Converte il canvas in un buffer
-            const buffer = canvas.toBuffer();
+        ctx.fillText('Rank:', 100, 300);
+        ctx.fillText(Rank, 300, 300);
 
-            // Crea l'allegato
-            const attachment = new AttachmentBuilder(buffer, { name: 'server-settings.png' });
+        ctx.fillText('Punti:', 100, 350);
+        ctx.fillText(Points, 300, 350);
 
-            // Invia l'immagine
-            await interaction.reply({ files: [attachment] });
+        ctx.fillText('Coins:', 100, 400);
+        ctx.fillText(Coins, 300, 400);
 
-        } else if (subcommand === 'info') {
-            const serverInfoEmbed = new EmbedBuilder()
-                .setTitle('Info del Server')
-                .setDescription(`Ecco alcune informazioni sul server **${interaction.guild.name}**`)
-                .addFields(
-                    { name: 'Membri Totali', value: `${interaction.guild.memberCount || 0}`, inline: true },
-                    { name: 'Creato il', value: `${interaction.guild.createdAt.toDateString()}`, inline: true },
-                )
-                .setColor('Blue')
-                .setThumbnail(interaction.guild.iconURL({ dynamic: true }) || '');
+        // Avatar
+        const avatar = await Canvas.loadImage(interaction.guild.iconURL({ extension: 'png', size: 512 }) || './default-avatar.png');
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(150, 120, 50, 0, Math.PI * 2, true); 
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(avatar, 100, 70, 100, 100);
+        ctx.restore();
 
-            await interaction.reply({ embeds: [serverInfoEmbed] });
-        }
+      
+        const attachment = new AttachmentBuilder(canvas.toBuffer(), { name: 'profile.png' });
+
+        await interaction.deferReply();
+        await interaction.editReply({ files: [attachment] });
     },
 };
