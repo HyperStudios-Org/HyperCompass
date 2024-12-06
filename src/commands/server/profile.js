@@ -24,71 +24,74 @@ module.exports = {
 
         const { Description, Rank, Points, Coins } = serverSchemaData;
 
-        const canvas = Canvas.createCanvas(900, 500); 
+  
+        const canvas = Canvas.createCanvas(1100, 600);
         const ctx = canvas.getContext('2d');
 
-        // Background
-        ctx.fillStyle = '#2f3136'; 
+    
+        const backgroundColor = '#bf2c27'; 
+        ctx.fillStyle = backgroundColor;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
 
         // Header
-        ctx.fillStyle = '#4c4cff';
-
-        const x = 50;   
-        const y = 50;    
-        const width = 800;  
-        const height = 300; 
-        const radius = 50;  
-        
- 
+        const headerX = 20, headerY = 20, headerWidth = canvas.width - 40, headerHeight = 160, radius = 30;
+        ctx.fillStyle = '#7c3aed'; 
         ctx.beginPath();
-        ctx.moveTo(x + radius, y);
-        ctx.arcTo(x + width, y, x + width, y + height, radius);
-        ctx.arcTo(x + width, y + height, x, y + height, radius);
-        ctx.arcTo(x, y + height, x, y, radius);
-        ctx.arcTo(x, y, x + width, y, radius);
+        ctx.moveTo(headerX + radius, headerY);
+        ctx.arcTo(headerX + headerWidth, headerY, headerX + headerWidth, headerY + headerHeight, radius);
+        ctx.arcTo(headerX + headerWidth, headerY + headerHeight, headerX, headerY + headerHeight, radius);
+        ctx.arcTo(headerX, headerY + headerHeight, headerX, headerY, radius);
+        ctx.arcTo(headerX, headerY, headerX + headerWidth, headerY, radius);
         ctx.closePath();
         ctx.fill();
 
+        // Header content
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 40px sans-serif';
+        ctx.fillText(interaction.guild.name, 50, 90);
+        ctx.font = '20px sans-serif';
+        ctx.fillText(`ID: ${interaction.guild.id}`, 50, 130);
+        ctx.fillText(`Creato in data: ${interaction.guild.createdAt.toDateString()}`, 50, 160);
+
+        // Profile statistics
+        const statsX = 20, statsY = 200, statsWidth = canvas.width - 40, statsHeight = 300;
+        ctx.fillStyle = '#2f3136'; 
+        ctx.beginPath();
+        ctx.moveTo(statsX + radius, statsY);
+        ctx.arcTo(statsX + statsWidth, statsY, statsX + statsWidth, statsY + statsHeight, radius);
+        ctx.arcTo(statsX + statsWidth, statsY + statsHeight, statsX, statsY + statsHeight, radius);
+        ctx.arcTo(statsX, statsY + statsHeight, statsX, statsY, radius);
+        ctx.arcTo(statsX, statsY, statsX + statsWidth, statsY, radius);
+        ctx.closePath();
+        ctx.fill();
+
+        // Stat content
         ctx.fillStyle = '#ffffff';
         ctx.font = '30px sans-serif';
-        ctx.fillText('PROFILO', 100, 100);
-        ctx.fillText(interaction.guild.name, 100, 140);
-        ctx.fillText(`ID: ${interaction.guild.id}`, 600, 100);
-        ctx.fillText(`Creato il: ${interaction.guild.createdAt.toDateString()}`, 600, 140);
+        ctx.fillText('Descrizione:', 50, 250);
+        ctx.fillText(Description || 'Non disponibile', 300, 250);
 
-        // Statistiche
-        ctx.fillStyle = '#2f3136';
-        ctx.fillRect(50, 200, 800, 250); 
+        ctx.fillText('Rank:', 50, 300);
+        ctx.fillText(Rank || 'Default', 300, 300);
 
-        ctx.fillStyle = '#ffffff';
-        ctx.font = '20px sans-serif';
-        ctx.fillText('Descrizione:', 100, 250);
-        ctx.fillText(Description, 300, 250);
+        ctx.fillText('Punti:', 50, 350);
+        ctx.fillText((Points || 0).toString(), 300, 350);
 
-        ctx.fillText('Rank:', 100, 300);
-        ctx.fillText(Rank, 300, 300);
-
-        ctx.fillText('Punti:', 100, 350);
-        ctx.fillText(Points, 300, 350);
-
-        ctx.fillText('Coins:', 100, 400);
-        ctx.fillText(Coins, 300, 400);
+        ctx.fillText('Coins:', 50, 400);
+        ctx.fillText((Coins || 0).toString(), 300, 400);
 
         // Avatar
         const avatar = await Canvas.loadImage(interaction.guild.iconURL({ extension: 'png', size: 512 }) || './default-avatar.png');
         ctx.save();
         ctx.beginPath();
-        ctx.arc(150, 120, 50, 0, Math.PI * 2, true); 
+        ctx.arc(900, 120, 80, 0, Math.PI * 2, true); 
         ctx.closePath();
         ctx.clip();
-        ctx.drawImage(avatar, 100, 70, 100, 100);
+        ctx.drawImage(avatar, 820, 40, 160, 160);
         ctx.restore();
 
-      
+       
         const attachment = new AttachmentBuilder(canvas.toBuffer(), { name: 'profile.png' });
-
         await interaction.deferReply();
         await interaction.editReply({ files: [attachment] });
     },
