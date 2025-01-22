@@ -3,6 +3,7 @@ import { readdirSync } from "fs";
 import path, { join } from "path";
 import config from "./configs/config.json";
 import chalk from "chalk";
+import mongoose from "mongoose";
 
 type Command = {
     data: SlashCommandBuilder;
@@ -55,9 +56,7 @@ async function LoadCommands() {
         const rest = new REST({ version: "10" }).setToken(config.token);
 
         const response = await rest.put(Routes.applicationCommands(config.clientId), { body: commandData });
-        
-        console.log("Comandi registrati con successo:", response);
-
+    
     } catch (error) {
         console.error("Errore nella registrazione dei comandi:", error);
     }
@@ -100,6 +99,12 @@ client.once("ready", async () => {
     await LoadCommands();
     await loadEvents();
     await loadMessagesCommands();
+    try {
+        await mongoose.connect(config.mongodb || '');
+        console.log('Database connesso!');
+      } catch (err) {
+        console.log('Database non connesso!', err);
+      }
     console.log(chalk.green("Client login avvenuto con successo come"), chalk.blue(client.user!.tag));
 });
 

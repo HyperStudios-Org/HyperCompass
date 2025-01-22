@@ -3,6 +3,7 @@ import * as EMOJI from '../../configs/emoji.json'
 import mongoose from 'mongoose'
 import config from '../../configs/config.json'
 
+
 export default {
     data: new SlashCommandBuilder()
     .setName('ping')

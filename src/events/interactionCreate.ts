@@ -1,10 +1,26 @@
 import { Interaction, Client, EmbedBuilder, Events } from "discord.js";
+import userSchema from '../typings/schemas/userSchema'
 
 export default {
   name: Events.InteractionCreate,
   once: false,
   async execute(interaction, client) {
     try { 
+
+      const userSchemaData = await userSchema.findOne({ UserID: interaction.user.id})
+
+      if (!userSchemaData) {
+        await userSchema.create({
+        UserID: interaction.user.id,
+        HyperCoins: 100,
+        Bio: "Nuovo Utente",
+        Title: "",
+        Privacy: false,
+        Admin: false,
+        Theme: "Default",
+        Language: ""
+    })
+      }
       if (interaction.isChatInputCommand() || interaction.isContextMenuCommand()) {
         const command = client.commands.get(interaction.commandName);
 
@@ -16,6 +32,8 @@ export default {
           });
           return;
         }
+
+        
     
         await command.execute(interaction, client);
       }
