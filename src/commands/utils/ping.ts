@@ -20,6 +20,8 @@ export default {
             const embed = new EmbedBuilder()
             .setDescription(`${EMOJI.green_rocket}La **Latenza** del bot è di **${Date.now() - interaction.createdTimestamp}ms**\n\n${EMOJI.database}**Database:** ${dbLatency}ms\n${EMOJI.globe}**Api:** ${apiLatency} `)
             .setColor('#2b2d31')
+
+            await interaction.reply({ embeds: [embed]})
         } catch (err) {
             console.log(err)
         }
