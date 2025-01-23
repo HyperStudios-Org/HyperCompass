@@ -1,4 +1,12 @@
-import { SlashCommandBuilder, EmbedBuilder, Client, ChatInputCommandInteraction } from "discord.js";
+import {
+    SlashCommandBuilder,
+    EmbedBuilder,
+    Client,
+    ChatInputCommandInteraction,
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle
+} from "discord.js";
 import userSchema from '../../typings/schemas/userSchema';
 import * as EMOJI from '../../configs/emoji.json';
 
@@ -32,9 +40,45 @@ export default {
 
         const embed = new EmbedBuilder()
             .setTitle(`${EMOJI.blue_dashboard}**__Profilo di ${user.username}__**`)
-            .setDescription(`${EMOJI.ping} **User:** <@${user.id}>\n${EMOJI.user} **ID:** ${user.id}\n${EMOJI.admin} **Admin:** ${userSchemaData.Admin}\n\n${EMOJI.wallet} **HyperCoins:** ${userSchemaData.HyperCoins}\u200b${EMOJI.sliders}: **Titolo:** ${userSchemaData.Title || "Nessun titolo"}`)
+            .setDescription(
+                `${EMOJI.ping} **User:** <@${user.id}>\n` +
+                `${EMOJI.user} **ID:** ${user.id}\n` +
+                `${EMOJI.admin} **Admin:** ${userSchemaData.Admin}\n\n` +
+                `${EMOJI.wallet} **HyperCoins:** ${userSchemaData.HyperCoins}${EMOJI.sliders}: **Titolo:** ${userSchemaData.Title || "Nessun titolo"}\n` +
+                `${EMOJI.bio} **Bio:** ${userSchemaData.Bio}`
+            )
             .setColor('#2b2d31');
 
-        await interaction.reply({ embeds: [embed] });
+            
+
+       const message = await interaction.reply({ embeds: [embed] });
+
+   
+
+        const components: ActionRowBuilder<ButtonBuilder>[] = [];
+
+        if (user.id === interaction.user.id) {
+            const row = new ActionRowBuilder<ButtonBuilder>()
+                .addComponents(
+                    new ButtonBuilder()
+                        .setCustomId('bio')
+                        .setEmoji(`${EMOJI.bio}`)
+                        .setStyle(ButtonStyle.Secondary),
+                    new ButtonBuilder()
+                        .setCustomId('title')
+                        .setEmoji(`${EMOJI.sliders}`)
+                        .setStyle(ButtonStyle.Secondary),
+                        new ButtonBuilder()
+                        .setCustomId(`settings_${message.id}`)
+                        .setEmoji(`${EMOJI.gear}`)
+                        .setStyle(ButtonStyle.Secondary),
+                );
+
+            components.push(row); 
+        }
+
+        await message.edit({ embeds: [embed], components})
+
+       
     }
 };
