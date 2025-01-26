@@ -1,12 +1,4 @@
-import {
-    SlashCommandBuilder,
-    EmbedBuilder,
-    Client,
-    ChatInputCommandInteraction,
-    ActionRowBuilder,
-    ButtonBuilder,
-    ButtonStyle
-} from "discord.js";
+import { SlashCommandBuilder, EmbedBuilder, Client, ChatInputCommandInteraction, ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 import userSchema from '../../typings/schemas/userSchema';
 import * as EMOJI from '../../configs/emoji.json';
 
@@ -44,16 +36,12 @@ export default {
                 `${EMOJI.ping} **User:** <@${user.id}>\n` +
                 `${EMOJI.user} **ID:** ${user.id}\n` +
                 `${EMOJI.admin} **Admin:** ${userSchemaData.Admin}\n\n` +
-                `${EMOJI.wallet} **HyperCoins:** ${userSchemaData.HyperCoins}${EMOJI.sliders}: **Titolo:** ${userSchemaData.Title || "Nessun titolo"}\n` +
+                `${EMOJI.wallet} **HyperCoins:** ${userSchemaData.HyperCoins}ㅤㅤㅤㅤㅤ${EMOJI.sliders}: **Titolo:** ${userSchemaData.Title || "Nessun titolo"}\n` +
                 `${EMOJI.bio} **Bio:** ${userSchemaData.Bio}`
             )
             .setColor('#2b2d31');
 
-            
-
-       const message = await interaction.reply({ embeds: [embed] });
-
-   
+        const message = await interaction.reply({ embeds: [embed], fetchReply: true });
 
         const components: ActionRowBuilder<ButtonBuilder>[] = [];
 
@@ -68,7 +56,7 @@ export default {
                         .setCustomId('title')
                         .setEmoji(`${EMOJI.sliders}`)
                         .setStyle(ButtonStyle.Secondary),
-                        new ButtonBuilder()
+                    new ButtonBuilder()
                         .setCustomId(`settings_${message.id}`)
                         .setEmoji(`${EMOJI.gear}`)
                         .setStyle(ButtonStyle.Secondary),
@@ -77,8 +65,8 @@ export default {
             components.push(row); 
         }
 
-        await message.edit({ embeds: [embed], components})
+        await message.edit({ embeds: [embed], components });
 
-       
+
     }
 };

@@ -17,7 +17,7 @@ const userSchema = new Schema<IUser>({
     Bio: { type: String, default: "Nuovo Utente" },
     Title: { type: String, default: "" },
     Privacy: { type: Boolean, default: false },
-    Admin: { type: Boolean, default: false },
+    Admin: { type: Boolean, default: false }, 
     Theme: { type: String, default: "Default" },
     Language: { type: String, default: "" }
 });
